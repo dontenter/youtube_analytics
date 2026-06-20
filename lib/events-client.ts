@@ -1,4 +1,6 @@
-export type EventsMap = Record<string, string[]>;
+import { EventsMap } from '@/lib/blob';
+
+export type { EventsMap };
 
 export async function fetchEvents(type: 'campaigns' | 'updates'): Promise<EventsMap> {
   const res = await fetch(`/api/${type}`);
@@ -8,7 +10,7 @@ export async function fetchEvents(type: 'campaigns' | 'updates'): Promise<Events
   return res.json();
 }
 
-export async function saveEvents(type: 'campaigns' | 'updates', data: EventsMap): Promise<void> {
+export async function saveEvents(type: 'campaigns' | 'updates', data: EventsMap): Promise<EventsMap> {
   const res = await fetch(`/api/${type}`, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
@@ -24,4 +26,5 @@ export async function saveEvents(type: 'campaigns' | 'updates', data: EventsMap)
     }
     throw new Error(message);
   }
+  return res.json();
 }

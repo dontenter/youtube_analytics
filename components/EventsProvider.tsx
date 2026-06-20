@@ -50,13 +50,13 @@ export function EventsProvider({ children }: { children: ReactNode }) {
   }, [load]);
 
   const saveCampaigns = useCallback(async (data: EventsMap) => {
-    await saveEvents('campaigns', data);
-    setCampaigns(data);
+    const verified = await saveEvents('campaigns', data);
+    setCampaigns(verified);
   }, []);
 
   const saveUpdates = useCallback(async (data: EventsMap) => {
-    await saveEvents('updates', data);
-    setUpdates(data);
+    const verified = await saveEvents('updates', data);
+    setUpdates(verified);
   }, []);
 
   return (

@@ -15,8 +15,8 @@ export async function GET() {
 export async function POST(request: Request) {
   try {
     const data = await request.json();
-    await writeEvents('updates', data);
-    return NextResponse.json({ success: true });
+    const verified = await writeEvents('updates', data);
+    return NextResponse.json(verified);
   } catch (err) {
     console.error('[API updates POST] error:', err);
     const message = err instanceof Error ? err.message : 'Unknown error';
