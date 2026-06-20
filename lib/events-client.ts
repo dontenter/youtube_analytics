@@ -15,6 +15,13 @@ export async function saveEvents(type: 'campaigns' | 'updates', data: EventsMap)
     body: JSON.stringify(data),
   });
   if (!res.ok) {
-    throw new Error(`Failed to save ${type}: ${res.status}`);
+    let message = `Failed to save ${type}: ${res.status}`;
+    try {
+      const body = await res.json();
+      if (body.error) message = body.error;
+    } catch {
+      // ignore
+    }
+    throw new Error(message);
   }
 }
