@@ -30,5 +30,6 @@ export async function writeEvents(key: keyof typeof BLOB_PATHS, data: EventsMap)
     access: 'private',
     contentType: 'application/json',
     addRandomSuffix: false,
+    allowOverwrite: true,
   });
 }

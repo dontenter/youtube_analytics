@@ -14,6 +14,7 @@ export default function ManagePage() {
     error,
     saveCampaigns,
     saveUpdates,
+    refresh,
   } = useEvents();
 
   const [search, setSearch] = useState('');
@@ -68,6 +69,7 @@ export default function ManagePage() {
         await saveUpdates(next);
         setUpdateInput('');
       }
+      await refresh();
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Ошибка сохранения');
     } finally {
@@ -98,6 +100,7 @@ export default function ManagePage() {
         };
         await saveUpdates(next);
       }
+      await refresh();
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Ошибка сохранения');
     } finally {
