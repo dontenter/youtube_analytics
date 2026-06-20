@@ -27,7 +27,7 @@ export async function readEvents(key: keyof typeof BLOB_PATHS): Promise<EventsMa
 
 export async function writeEvents(key: keyof typeof BLOB_PATHS, data: EventsMap): Promise<void> {
   await put(BLOB_PATHS[key], JSON.stringify(data), {
-    access: 'public',
+    access: 'private',
     contentType: 'application/json',
     addRandomSuffix: false,
   });
