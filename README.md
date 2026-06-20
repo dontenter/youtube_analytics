@@ -1,36 +1,40 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# YouTube Game Analytics
 
-## Getting Started
+Аналитический дашборд для визуализации ежедневных геймплеев игр, запущенных на YouTube.
 
-First, run the development server:
+## Возможности
+
+- Список всех игр с краткой статистикой (всего геймплеев, среднее, максимум, дней наблюдений)
+- Мини-графики (sparklines) для быстрого просмотра динамики
+- Поиск по ID или названию игры
+- Детальная страница каждой игры с интерактивным графиком и таблицей по дням
+- Тёмная тема в стиле проекта
+
+## Стек
+
+- Next.js 16 + App Router
+- TypeScript
+- Tailwind CSS 4
+- Recharts
+- Framer Motion
+
+## Запуск
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Откройте [http://localhost:3000](http://localhost:3000).
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Сборка
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+```
 
-## Learn More
+Статический сайт собирается в папку `dist`. Данные автоматически генерируются из `public/raw_crawler_data_202606121639.csv` перед сборкой.
 
-To learn more about Next.js, take a look at the following resources:
+## Данные
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Исходный CSV-файл находится в `public/raw_crawler_data_202606121639.csv`. При изменении данных пересоберите проект командой `npm run build`.
