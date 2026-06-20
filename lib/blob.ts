@@ -7,20 +7,23 @@ const BLOB_PATHS = {
   updates: 'updates.json',
 } as const;
 
+function checkToken() {
+  if (!process.env.BLOB_READ_WRITE_TOKEN) {
+    throw new Error(
+      'Missing BLOB_READ_WRITE_TOKEN environment variable. Make sure a Vercel Blob store is connected to this project.'
+    );
+  }
+}
+
 export async function readEvents(key: keyof typeof BLOB_PATHS): Promise<EventsMap> {
   try {
-    console.log(`[blob] reading ${BLOB_PATHS[key]}`);
+    checkToken();
     const blob = await head(BLOB_PATHS[key]);
-    console.log(`[blob] got head for ${BLOB_PATHS[key]}:`, blob);
-    const url = blob.downloadUrl || blob.url;
-    const res = await fetch(url);
-    console.log(`[blob] fetch status for ${BLOB_PATHS[key]}:`, res.status);
+    const res = await fetch(blob.url);
     if (!res.ok) {
       throw new Error(`Failed to fetch ${key}: ${res.status}`);
     }
-    const text = await res.text();
-    console.log(`[blob] fetch body for ${BLOB_PATHS[key]}:`, text);
-    const data = text ? (JSON.parse(text) as EventsMap) : {};
+    const data = (await res.json()) as EventsMap;
     return data || {};
   } catch (err) {
     console.error(`[blob] read error for ${BLOB_PATHS[key]}:`, err);
@@ -29,19 +32,12 @@ export async function readEvents(key: keyof typeof BLOB_PATHS): Promise<EventsMa
 }
 
 export async function writeEvents(key: keyof typeof BLOB_PATHS, data: EventsMap): Promise<EventsMap> {
-  console.log(`[blob] writing ${BLOB_PATHS[key]}:`, JSON.stringify(data));
-  const blob = await put(BLOB_PATHS[key], JSON.stringify(data), {
-    access: 'private',
+  checkToken();
+  await put(BLOB_PATHS[key], JSON.stringify(data), {
+    access: 'public',
     contentType: 'application/json',
     addRandomSuffix: false,
     allowOverwrite: true,
   });
-  console.log(`[blob] wrote ${BLOB_PATHS[key]}:`, blob);
-
-  // Verify by reading back
-  const url = blob.downloadUrl || blob.url;
-  const res = await fetch(url);
-  const text = await res.text();
-  console.log(`[blob] verify read ${BLOB_PATHS[key]}:`, text);
-  return text ? (JSON.parse(text) as EventsMap) : {};
+  return data;
 }
