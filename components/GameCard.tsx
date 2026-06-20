@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { Game, formatNumber, formatDate } from '@/lib/data';
+import { isValidCampaignRange } from '@/lib/events';
 import { useEvents } from '@/components/EventsProvider';
 import Sparkline from './Sparkline';
 
@@ -12,9 +13,13 @@ interface GameCardProps {
   trendWeek?: number;
 }
 
+function formatCampaignRange(range: { start: string; end: string }): string {
+  return `${formatDate(range.start)} – ${formatDate(range.end)}`;
+}
+
 export default function GameCard({ game, index, trendWeek }: GameCardProps) {
   const { campaigns, updates } = useEvents();
-  const campaignDates = campaigns[game.id] || [];
+  const campaignRanges = (campaigns[game.id] || []).filter(isValidCampaignRange);
   const updateDates = updates[game.id] || [];
 
   return (
@@ -46,9 +51,9 @@ export default function GameCard({ game, index, trendWeek }: GameCardProps) {
           </div>
         </div>
 
-        {(campaignDates.length > 0 || updateDates.length > 0) && (
+        {(campaignRanges.length > 0 || updateDates.length > 0) && (
           <div className="mt-3 flex flex-wrap gap-2">
-            {campaignDates.length > 0 && (
+            {campaignRanges.length > 0 && (
               <div className="inline-flex items-center gap-1.5 rounded-full bg-accent/10 px-2.5 py-1 text-xs font-medium text-accent">
                 <svg
                   className="h-3.5 w-3.5"
@@ -63,8 +68,8 @@ export default function GameCard({ game, index, trendWeek }: GameCardProps) {
                     d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z"
                   />
                 </svg>
-                <span title={campaignDates.map(formatDate).join(', ')}>
-                  {campaignDates.length} {campaignDates.length === 1 ? 'кампания' : campaignDates.length < 5 ? 'кампании' : 'кампаний'}
+                <span title={campaignRanges.map(formatCampaignRange).join(', ')}>
+                  {campaignRanges.length} {campaignRanges.length === 1 ? 'кампания' : campaignRanges.length < 5 ? 'кампании' : 'кампаний'}
                 </span>
               </div>
             )}

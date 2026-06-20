@@ -2,7 +2,17 @@ const fs = require('fs');
 const path = require('path');
 const xlsx = require('xlsx');
 
-const csvPath = path.join(process.cwd(), 'public', 'raw_crawler_data_202606121639.csv');
+function findLatestCSV(publicDir) {
+  const files = fs.readdirSync(publicDir)
+    .filter(f => /^raw_crawler_data_\d{12}\.csv$/.test(f))
+    .sort();
+  if (files.length === 0) {
+    throw new Error('No raw_crawler_data_*.csv file found in public/');
+  }
+  return path.join(publicDir, files[files.length - 1]);
+}
+
+const csvPath = findLatestCSV(path.join(process.cwd(), 'public'));
 const idsPath = path.join(process.cwd(), 'scripts', 'Ids.xlsx');
 const campaignsPath = path.join(process.cwd(), 'scripts', 'campaigns.json');
 const updatesPath = path.join(process.cwd(), 'scripts', 'updates.json');
@@ -70,7 +80,7 @@ function parseCSV(content, names, campaigns, updates) {
         id: gameId,
         name: names[gameId] || gameId,
         records: [],
-        campaignDates: getSortedDates(campaigns, gameId),
+        campaignRanges: [],
         updateDates: getSortedDates(updates, gameId),
       };
     }
@@ -99,6 +109,7 @@ function parseCSV(content, names, campaigns, updates) {
       max,
       min,
       launchDate,
+      campaignRanges: [],
     };
   });
 

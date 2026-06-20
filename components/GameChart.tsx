@@ -8,19 +8,24 @@ import {
   CartesianGrid,
   Tooltip,
   ResponsiveContainer,
-  ReferenceLine,
+  ReferenceArea,
   ReferenceDot,
 } from 'recharts';
 import { Game, formatNumber, formatDate } from '@/lib/data';
+import { CampaignRange, isValidCampaignRange } from '@/lib/events';
 import { useEvents } from '@/components/EventsProvider';
 
 interface GameChartProps {
   game: Game;
 }
 
+function isDateInRange(day: string, range: CampaignRange): boolean {
+  return day >= range.start && day <= range.end;
+}
+
 export default function GameChart({ game }: GameChartProps) {
   const { campaigns, updates } = useEvents();
-  const campaignDates = campaigns[game.id] || [];
+  const campaignRanges = (campaigns[game.id] || []).filter(isValidCampaignRange);
   const updateDates = updates[game.id] || [];
 
   const data = game.records.map(record => ({
@@ -29,10 +34,9 @@ export default function GameChart({ game }: GameChartProps) {
   }));
 
   const recordByDay = new Map(game.records.map(r => [r.day, r.gameplays]));
-  const campaignSet = new Set(campaignDates);
   const updateSet = new Set(updateDates);
 
-  const hasCampaigns = campaignDates.length > 0;
+  const hasCampaigns = campaignRanges.length > 0;
   const hasUpdates = updateDates.length > 0;
   const hasEvents = hasCampaigns || hasUpdates;
 
@@ -73,17 +77,18 @@ export default function GameChart({ game }: GameChartProps) {
             <Tooltip
               content={({ active, payload, label }) => {
                 if (active && payload && payload.length) {
-                  const isCampaignDay = campaignSet.has(label as string);
-                  const isUpdateDay = updateSet.has(label as string);
+                  const day = label as string;
+                  const activeCampaigns = campaignRanges.filter(r => isDateInRange(day, r));
+                  const isUpdateDay = updateSet.has(day);
                   return (
                     <div className="rounded-lg border border-border bg-background px-3 py-2 shadow-lg">
-                      <p className="text-xs text-muted">{formatDate(label as string)}</p>
+                      <p className="text-xs text-muted">{formatDate(day)}</p>
                       <p className="mt-1 text-sm font-semibold text-foreground">
                         {formatNumber(payload[0].value as number)} геймплеев
                       </p>
-                      {isCampaignDay && (
+                      {activeCampaigns.length > 0 && (
                         <p className="mt-1 text-xs font-medium text-accent">
-                          Запуск рекламной кампании
+                          Рекламная кампания
                         </p>
                       )}
                       {isUpdateDay && (
@@ -97,13 +102,15 @@ export default function GameChart({ game }: GameChartProps) {
                 return null;
               }}
             />
-            {campaignDates.map((date) => (
-              <ReferenceLine
-                key={`campaign-${date}`}
-                x={date}
+            {campaignRanges.map((range, index) => (
+              <ReferenceArea
+                key={`campaign-${range.start}-${range.end}-${index}`}
+                x1={range.start}
+                x2={range.end}
                 stroke="#3b82f6"
-                strokeDasharray="4 4"
-                strokeOpacity={0.6}
+                strokeOpacity={0.3}
+                fill="#3b82f6"
+                fillOpacity={0.1}
                 ifOverflow="extendDomain"
               />
             ))}
@@ -136,7 +143,7 @@ export default function GameChart({ game }: GameChartProps) {
         <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-2 text-xs text-muted">
           {hasCampaigns && (
             <div className="flex items-center gap-2">
-              <span className="h-4 w-px border-l-2 border-dashed border-accent/60" />
+              <span className="h-3 w-3 rounded-sm bg-accent/20 border border-accent/40" />
               <span>кампании</span>
             </div>
           )}

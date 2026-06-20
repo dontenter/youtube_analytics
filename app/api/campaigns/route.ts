@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
-import { readEvents, writeEvents } from '@/lib/blob';
+import { readBlob, writeBlob } from '@/lib/blob';
+import { CampaignMap } from '@/lib/events';
 
 export async function GET() {
   try {
-    const data = await readEvents('campaigns');
+    const data = await readBlob<CampaignMap>('campaigns');
     return NextResponse.json(data);
   } catch (err) {
     console.error('[API campaigns GET] error:', err);
@@ -14,8 +15,8 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    const data = await request.json();
-    const verified = await writeEvents('campaigns', data);
+    const data = (await request.json()) as CampaignMap;
+    const verified = await writeBlob<CampaignMap>('campaigns', data);
     return NextResponse.json(verified);
   } catch (err) {
     console.error('[API campaigns POST] error:', err);

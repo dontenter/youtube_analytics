@@ -1,7 +1,5 @@
 import { head, put } from '@vercel/blob';
 
-export type EventsMap = Record<string, string[]>;
-
 const BLOB_PATHS = {
   campaigns: 'campaigns.json',
   updates: 'updates.json',
@@ -15,7 +13,7 @@ function checkToken() {
   }
 }
 
-export async function readEvents(key: keyof typeof BLOB_PATHS): Promise<EventsMap> {
+export async function readBlob<T>(key: keyof typeof BLOB_PATHS): Promise<T> {
   try {
     checkToken();
     const blob = await head(BLOB_PATHS[key]);
@@ -23,15 +21,15 @@ export async function readEvents(key: keyof typeof BLOB_PATHS): Promise<EventsMa
     if (!res.ok) {
       throw new Error(`Failed to fetch ${key}: ${res.status}`);
     }
-    const data = (await res.json()) as EventsMap;
-    return data || {};
+    const data = (await res.json()) as T;
+    return data || ({} as T);
   } catch (err) {
     console.error(`[blob] read error for ${BLOB_PATHS[key]}:`, err);
-    return {};
+    return {} as T;
   }
 }
 
-export async function writeEvents(key: keyof typeof BLOB_PATHS, data: EventsMap): Promise<EventsMap> {
+export async function writeBlob<T>(key: keyof typeof BLOB_PATHS, data: T): Promise<T> {
   checkToken();
   await put(BLOB_PATHS[key], JSON.stringify(data), {
     access: 'public',

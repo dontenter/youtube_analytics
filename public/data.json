@@ -407,7 +407,7 @@
           "gameplays": 51968
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 11816357,
       "avg": 119357,
@@ -816,7 +816,7 @@
           "gameplays": 74718
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 10806027,
       "avg": 109152,
@@ -1141,7 +1141,7 @@
           "gameplays": 96794
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 10238859,
       "avg": 131267,
@@ -1318,7 +1318,7 @@
           "gameplays": 102617
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 8866391,
       "avg": 216253,
@@ -1507,7 +1507,7 @@
           "gameplays": 96437
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 8143906,
       "avg": 185089,
@@ -1716,7 +1716,7 @@
           "gameplays": 58649
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 6773472,
       "avg": 138234,
@@ -2125,7 +2125,7 @@
           "gameplays": 33189
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 5850871,
       "avg": 59100,
@@ -2326,7 +2326,7 @@
           "gameplays": 43723
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 5590388,
       "avg": 118944,
@@ -2979,7 +2979,7 @@
           "gameplays": 35838
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 5584247,
       "avg": 34902,
@@ -3160,7 +3160,7 @@
           "gameplays": 79041
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 4741631,
       "avg": 112896,
@@ -3813,7 +3813,7 @@
           "gameplays": 28803
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 4456785,
       "avg": 27855,
@@ -4194,7 +4194,7 @@
           "gameplays": 13146
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 4338203,
       "avg": 47154,
@@ -4603,7 +4603,7 @@
           "gameplays": 18841
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 3939707,
       "avg": 39795,
@@ -4848,7 +4848,7 @@
           "gameplays": 13024
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 3933540,
       "avg": 67820,
@@ -5501,7 +5501,7 @@
           "gameplays": 9347
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 2921276,
       "avg": 18258,
@@ -5758,7 +5758,7 @@
           "gameplays": 28996
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 2675005,
       "avg": 43853,
@@ -5823,7 +5823,7 @@
           "gameplays": 113118
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 1998380,
       "avg": 153722,
@@ -6476,7 +6476,7 @@
           "gameplays": 7694
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 1761921,
       "avg": 11012,
@@ -6517,7 +6517,7 @@
           "gameplays": 257395
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 1741966,
       "avg": 248852,
@@ -6762,7 +6762,7 @@
           "gameplays": 56417
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 1437389,
       "avg": 24783,
@@ -6915,7 +6915,7 @@
           "gameplays": 5997
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 1057741,
       "avg": 30221,
@@ -7568,7 +7568,7 @@
           "gameplays": 3573
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 766226,
       "avg": 4789,
@@ -7977,7 +7977,7 @@
           "gameplays": 1554
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 683317,
       "avg": 6902,
@@ -8610,7 +8610,7 @@
           "gameplays": 1044
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 664932,
       "avg": 4290,
@@ -9263,7 +9263,7 @@
           "gameplays": 4149
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 636213,
       "avg": 3976,
@@ -9812,7 +9812,7 @@
           "gameplays": 2134
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 599238,
       "avg": 4472,
@@ -10029,7 +10029,7 @@
           "gameplays": 7601
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 484426,
       "avg": 9499,
@@ -10050,7 +10050,7 @@
           "gameplays": 202128
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 411698,
       "avg": 205849,
@@ -10147,7 +10147,7 @@
           "gameplays": 10083
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 227496,
       "avg": 10833,
@@ -10208,7 +10208,7 @@
           "gameplays": 8934
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 201283,
       "avg": 16774,
@@ -10257,7 +10257,7 @@
           "gameplays": 4122
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 148398,
       "avg": 16489,
@@ -10414,7 +10414,7 @@
           "gameplays": 367
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 95494,
       "avg": 2653,
@@ -10431,7 +10431,7 @@
           "gameplays": 87365
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 87365,
       "avg": 87365,
@@ -10492,7 +10492,7 @@
           "gameplays": 4838
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 80021,
       "avg": 6668,
@@ -10525,7 +10525,7 @@
           "gameplays": 2229
         }
       ],
-      "campaignDates": [],
+      "campaignRanges": [],
       "updateDates": [],
       "total": 48273,
       "avg": 9655,

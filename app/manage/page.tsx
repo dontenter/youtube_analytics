@@ -4,7 +4,16 @@ import { useState, useMemo } from 'react';
 import Link from 'next/link';
 import data from '@/public/data.json';
 import { formatDate } from '@/lib/data';
+import { CampaignRange, isValidCampaignRange } from '@/lib/events';
 import { useEvents } from '@/components/EventsProvider';
+
+function formatRange(range: CampaignRange): string {
+  return `${formatDate(range.start)} – ${formatDate(range.end)}`;
+}
+
+function isValidDate(date: string): boolean {
+  return /^\d{4}-\d{2}-\d{2}$/.test(date);
+}
 
 export default function ManagePage() {
   const {
@@ -18,7 +27,8 @@ export default function ManagePage() {
 
   const [search, setSearch] = useState('');
   const [selectedId, setSelectedId] = useState<string | null>(null);
-  const [campaignInput, setCampaignInput] = useState('');
+  const [campaignStart, setCampaignStart] = useState('');
+  const [campaignEnd, setCampaignEnd] = useState('');
   const [updateInput, setUpdateInput] = useState('');
   const [saving, setSaving] = useState(false);
 
@@ -37,37 +47,28 @@ export default function ManagePage() {
     [selectedId]
   );
 
-  const handleAddDate = async (
-    type: 'campaigns' | 'updates',
-    date: string
-  ) => {
-    if (!selectedGame || !date) return;
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) {
-      alert('Дата должна быть в формате YYYY-MM-DD');
+  const handleAddCampaign = async () => {
+    if (!selectedGame || !campaignStart || !campaignEnd) return;
+    if (!isValidDate(campaignStart) || !isValidDate(campaignEnd)) {
+      alert('Даты должны быть в формате YYYY-MM-DD');
+      return;
+    }
+    if (campaignStart > campaignEnd) {
+      alert('Дата начала не может быть позже даты окончания');
       return;
     }
 
     setSaving(true);
     try {
-      if (type === 'campaigns') {
-        const current = campaigns[selectedGame.id] || [];
-        if (current.includes(date)) return;
-        const next = {
-          ...campaigns,
-          [selectedGame.id]: [...current, date].sort(),
-        };
-        await saveCampaigns(next);
-        setCampaignInput('');
-      } else {
-        const current = updates[selectedGame.id] || [];
-        if (current.includes(date)) return;
-        const next = {
-          ...updates,
-          [selectedGame.id]: [...current, date].sort(),
-        };
-        await saveUpdates(next);
-        setUpdateInput('');
-      }
+      const newRange: CampaignRange = { start: campaignStart, end: campaignEnd };
+      const current = (campaigns[selectedGame.id] || []).filter(isValidCampaignRange);
+      const next = {
+        ...campaigns,
+        [selectedGame.id]: [...current, newRange],
+      };
+      await saveCampaigns(next);
+      setCampaignStart('');
+      setCampaignEnd('');
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Ошибка сохранения');
     } finally {
@@ -75,29 +76,61 @@ export default function ManagePage() {
     }
   };
 
-  const handleRemoveDate = async (
-    type: 'campaigns' | 'updates',
-    date: string
-  ) => {
+  const handleRemoveCampaign = async (range: CampaignRange) => {
     if (!selectedGame) return;
 
     setSaving(true);
     try {
-      if (type === 'campaigns') {
-        const current = campaigns[selectedGame.id] || [];
-        const next = {
-          ...campaigns,
-          [selectedGame.id]: current.filter((d) => d !== date),
-        };
-        await saveCampaigns(next);
-      } else {
-        const current = updates[selectedGame.id] || [];
-        const next = {
-          ...updates,
-          [selectedGame.id]: current.filter((d) => d !== date),
-        };
-        await saveUpdates(next);
-      }
+      const current = campaigns[selectedGame.id] || [];
+      const next = {
+        ...campaigns,
+        [selectedGame.id]: current.filter(
+          (r) => r.start !== range.start || r.end !== range.end
+        ),
+      };
+      await saveCampaigns(next);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Ошибка сохранения');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleAddUpdate = async () => {
+    if (!selectedGame || !updateInput) return;
+    if (!isValidDate(updateInput)) {
+      alert('Дата должна быть в формате YYYY-MM-DD');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      const current = updates[selectedGame.id] || [];
+      if (current.includes(updateInput)) return;
+      const next = {
+        ...updates,
+        [selectedGame.id]: [...current, updateInput].sort(),
+      };
+      await saveUpdates(next);
+      setUpdateInput('');
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Ошибка сохранения');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleRemoveUpdate = async (date: string) => {
+    if (!selectedGame) return;
+
+    setSaving(true);
+    try {
+      const current = updates[selectedGame.id] || [];
+      const next = {
+        ...updates,
+        [selectedGame.id]: current.filter((d) => d !== date),
+      };
+      await saveUpdates(next);
     } catch (err) {
       alert(err instanceof Error ? err.message : 'Ошибка сохранения');
     } finally {
@@ -133,7 +166,7 @@ export default function ManagePage() {
             Управление событиями
           </h1>
           <p className="mt-2 text-sm text-muted">
-            Добавляйте даты рекламных кампаний и апдейтов для игр.
+            Добавляйте периоды рекламных кампаний и даты апдейтов для игр.
           </p>
         </header>
 
@@ -189,38 +222,48 @@ export default function ManagePage() {
                       <h3 className="text-sm font-semibold text-accent">
                         Рекламные кампании
                       </h3>
-                      <div className="mt-3 flex gap-2">
+                      <div className="mt-3 flex flex-col gap-2 sm:flex-row">
                         <input
                           type="date"
-                          value={campaignInput}
-                          onChange={(e) => setCampaignInput(e.target.value)}
+                          value={campaignStart}
+                          onChange={(e) => setCampaignStart(e.target.value)}
+                          placeholder="С"
+                          className="flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-accent"
+                        />
+                        <input
+                          type="date"
+                          value={campaignEnd}
+                          onChange={(e) => setCampaignEnd(e.target.value)}
+                          placeholder="По"
                           className="flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-accent"
                         />
                         <button
-                          onClick={() => handleAddDate('campaigns', campaignInput)}
-                          disabled={saving || !campaignInput}
+                          onClick={handleAddCampaign}
+                          disabled={saving || !campaignStart || !campaignEnd}
                           className="rounded-xl bg-accent px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
                         >
                           Добавить
                         </button>
                       </div>
                       <ul className="mt-3 space-y-2">
-                        {(campaigns[selectedGame.id] || []).map((date) => (
-                          <li
-                            key={date}
-                            className="flex items-center justify-between rounded-xl bg-background px-3 py-2 text-sm text-foreground"
-                          >
-                            <span>{formatDate(date)}</span>
-                            <button
-                              onClick={() => handleRemoveDate('campaigns', date)}
-                              disabled={saving}
-                              className="text-xs text-muted transition-colors hover:text-red-500"
+                        {(campaigns[selectedGame.id] || [])
+                          .filter(isValidCampaignRange)
+                          .map((range, index) => (
+                            <li
+                              key={`${range.start}-${range.end}-${index}`}
+                              className="flex items-center justify-between rounded-xl bg-background px-3 py-2 text-sm text-foreground"
                             >
-                              Удалить
-                            </button>
-                          </li>
-                        ))}
-                        {(campaigns[selectedGame.id] || []).length === 0 && (
+                              <span>{formatRange(range)}</span>
+                              <button
+                                onClick={() => handleRemoveCampaign(range)}
+                                disabled={saving}
+                                className="text-xs text-muted transition-colors hover:text-red-500"
+                              >
+                                Удалить
+                              </button>
+                            </li>
+                          ))}
+                        {(campaigns[selectedGame.id] || []).filter(isValidCampaignRange).length === 0 && (
                           <li className="text-sm text-muted">Нет кампаний</li>
                         )}
                       </ul>
@@ -238,7 +281,7 @@ export default function ManagePage() {
                           className="flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-emerald-500"
                         />
                         <button
-                          onClick={() => handleAddDate('updates', updateInput)}
+                          onClick={handleAddUpdate}
                           disabled={saving || !updateInput}
                           className="rounded-xl bg-emerald-500 px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
                         >
@@ -253,7 +296,7 @@ export default function ManagePage() {
                           >
                             <span>{formatDate(date)}</span>
                             <button
-                              onClick={() => handleRemoveDate('updates', date)}
+                              onClick={() => handleRemoveUpdate(date)}
                               disabled={saving}
                               className="text-xs text-muted transition-colors hover:text-red-500"
                             >

@@ -1,3 +1,8 @@
+export interface CampaignRange {
+  start: string;
+  end: string;
+}
+
 export interface GameRecord {
   day: string;
   gameplays: number;
@@ -12,7 +17,7 @@ export interface Game {
   max: number;
   min: number;
   launchDate: string;
-  campaignDates: string[];
+  campaignRanges: CampaignRange[];
   updateDates: string[];
 }
 

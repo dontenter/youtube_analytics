@@ -8,23 +8,29 @@ import {
   useCallback,
   ReactNode,
 } from 'react';
-import { EventsMap, fetchEvents, saveEvents } from '@/lib/events-client';
+import { CampaignMap, UpdateMap } from '@/lib/events';
+import {
+  fetchCampaigns,
+  fetchUpdates,
+  saveCampaigns,
+  saveUpdates,
+} from '@/lib/events-client';
 
 interface EventsContextValue {
-  campaigns: EventsMap;
-  updates: EventsMap;
+  campaigns: CampaignMap;
+  updates: UpdateMap;
   loading: boolean;
   error: string | null;
   refresh: () => Promise<void>;
-  saveCampaigns: (data: EventsMap) => Promise<void>;
-  saveUpdates: (data: EventsMap) => Promise<void>;
+  saveCampaigns: (data: CampaignMap) => Promise<void>;
+  saveUpdates: (data: UpdateMap) => Promise<void>;
 }
 
 const EventsContext = createContext<EventsContextValue | null>(null);
 
 export function EventsProvider({ children }: { children: ReactNode }) {
-  const [campaigns, setCampaigns] = useState<EventsMap>({});
-  const [updates, setUpdates] = useState<EventsMap>({});
+  const [campaigns, setCampaigns] = useState<CampaignMap>({});
+  const [updates, setUpdates] = useState<UpdateMap>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -33,8 +39,8 @@ export function EventsProvider({ children }: { children: ReactNode }) {
     setError(null);
     try {
       const [campaignsData, updatesData] = await Promise.all([
-        fetchEvents('campaigns'),
-        fetchEvents('updates'),
+        fetchCampaigns(),
+        fetchUpdates(),
       ]);
       setCampaigns(campaignsData);
       setUpdates(updatesData);
@@ -49,13 +55,13 @@ export function EventsProvider({ children }: { children: ReactNode }) {
     load();
   }, [load]);
 
-  const saveCampaigns = useCallback(async (data: EventsMap) => {
-    const verified = await saveEvents('campaigns', data);
+  const handleSaveCampaigns = useCallback(async (data: CampaignMap) => {
+    const verified = await saveCampaigns(data);
     setCampaigns(verified);
   }, []);
 
-  const saveUpdates = useCallback(async (data: EventsMap) => {
-    const verified = await saveEvents('updates', data);
+  const handleSaveUpdates = useCallback(async (data: UpdateMap) => {
+    const verified = await saveUpdates(data);
     setUpdates(verified);
   }, []);
 
@@ -67,8 +73,8 @@ export function EventsProvider({ children }: { children: ReactNode }) {
         loading,
         error,
         refresh: load,
-        saveCampaigns,
-        saveUpdates,
+        saveCampaigns: handleSaveCampaigns,
+        saveUpdates: handleSaveUpdates,
       }}
     >
       {children}
