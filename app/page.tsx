@@ -64,7 +64,7 @@ export default function HomePage() {
             YouTube Game Analytics
           </h1>
           <p className="mt-4 max-w-2xl text-lg text-muted">
-            Аналитика геймплеев игр, запущенных на YouTube. Выберите игру,
+            Аналитика геймплеев игр на YouTube. Выберите игру,
             чтобы увидеть детальный график изменения активности.
           </p>
           <div className="mt-6">
