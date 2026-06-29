@@ -4,10 +4,10 @@ const xlsx = require('xlsx');
 
 function findLatestCSV(publicDir) {
   const files = fs.readdirSync(publicDir)
-    .filter(f => /^raw_crawler_data_\d{12}\.csv$/.test(f))
+    .filter(f => /^raw_crawler(_msn_youtube_|_data_)\d.*\.csv$/.test(f))
     .sort();
   if (files.length === 0) {
-    throw new Error('No raw_crawler_data_*.csv file found in public/');
+    throw new Error('No raw_crawler_*.csv file found in public/');
   }
   return path.join(publicDir, files[files.length - 1]);
 }
