@@ -16,9 +16,10 @@ const csvPath = findLatestCSV(path.join(process.cwd(), 'public'));
 const idsPath = path.join(process.cwd(), 'scripts', 'Ids.xlsx');
 const campaignsPath = path.join(process.cwd(), 'scripts', 'campaigns.json');
 const updatesPath = path.join(process.cwd(), 'scripts', 'updates.json');
+const gameNamesPath = path.join(process.cwd(), 'scripts', 'gameNames.json');
 const outputPath = path.join(process.cwd(), 'public', 'data.json');
 
-function loadGameNames(excelPath) {
+function loadGameNames(excelPath, override) {
   const workbook = xlsx.readFile(excelPath);
   const sheet = workbook.Sheets[workbook.SheetNames[0]];
   const rows = xlsx.utils.sheet_to_json(sheet, { header: 1 });
@@ -30,7 +31,8 @@ function loadGameNames(excelPath) {
       names[String(id).trim()] = String(name).trim();
     }
   }
-  return names;
+  // Local JSON overrides take precedence over Excel mapping
+  return { ...names, ...override };
 }
 
 function loadJsonConfig(configPath) {
@@ -41,6 +43,18 @@ function loadJsonConfig(configPath) {
     console.warn(`Could not load config from ${configPath}: ${err.message}`);
     return {};
   }
+}
+
+function loadGameNamesOverride(configPath) {
+  const data = loadJsonConfig(configPath);
+  if (!data || typeof data !== 'object') return {};
+  const normalized = {};
+  for (const [id, name] of Object.entries(data)) {
+    if (id && name) {
+      normalized[String(id).trim()] = String(name).trim();
+    }
+  }
+  return normalized;
 }
 
 function getSortedDates(config, gameId) {
@@ -119,7 +133,8 @@ function parseCSV(content, names, campaigns, updates) {
   return games;
 }
 
-const names = loadGameNames(idsPath);
+const gameNamesOverride = loadGameNamesOverride(gameNamesPath);
+const names = loadGameNames(idsPath, gameNamesOverride);
 const campaigns = loadJsonConfig(campaignsPath);
 const updates = loadJsonConfig(updatesPath);
 const content = fs.readFileSync(csvPath, 'utf-8');

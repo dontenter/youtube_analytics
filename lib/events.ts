@@ -5,6 +5,7 @@ export interface CampaignRange {
 
 export type CampaignMap = Record<string, CampaignRange[]>;
 export type UpdateMap = Record<string, string[]>;
+export type GameNameMap = Record<string, string>;
 
 export function isValidCampaignRange(value: unknown): value is CampaignRange {
   return (

@@ -1,11 +1,12 @@
 'use client';
 
-import { useState, useMemo } from 'react';
+import { useState, useMemo, useRef } from 'react';
 import Link from 'next/link';
 import data from '@/public/data.json';
 import { formatDate } from '@/lib/data';
 import { CampaignRange, isValidCampaignRange } from '@/lib/events';
 import { useEvents } from '@/components/EventsProvider';
+import { GameName } from '@/components/GameName';
 
 function formatRange(range: CampaignRange): string {
   return `${formatDate(range.start)} – ${formatDate(range.end)}`;
@@ -19,11 +20,15 @@ export default function ManagePage() {
   const {
     campaigns,
     updates,
+    gameNames,
     loading,
     error,
     saveCampaigns,
     saveUpdates,
+    saveGameNames,
   } = useEvents();
+
+  const nameInputRef = useRef<HTMLInputElement>(null);
 
   const [search, setSearch] = useState('');
   const [selectedId, setSelectedId] = useState<string | null>(null);
@@ -32,20 +37,42 @@ export default function ManagePage() {
   const [updateInput, setUpdateInput] = useState('');
   const [saving, setSaving] = useState(false);
 
-  const filteredGames = useMemo(() => {
-    const query = search.toLowerCase().trim();
-    if (!query) return data.games;
-    return data.games.filter(
-      (game) =>
-        game.name.toLowerCase().includes(query) ||
-        game.id.toLowerCase().includes(query)
-    );
-  }, [search]);
-
   const selectedGame = useMemo(
     () => data.games.find((g) => g.id === selectedId) || null,
     [selectedId]
   );
+
+  const filteredGames = useMemo(() => {
+    const query = search.toLowerCase().trim();
+    if (!query) return data.games;
+    return data.games.filter((game) => {
+      const displayName = gameNames[game.id] || game.name;
+      return (
+        displayName.toLowerCase().includes(query) ||
+        game.id.toLowerCase().includes(query)
+      );
+    });
+  }, [search, gameNames]);
+
+  const handleSaveGameName = async () => {
+    if (!selectedGame || !nameInputRef.current) return;
+
+    setSaving(true);
+    try {
+      const next = { ...gameNames };
+      const value = nameInputRef.current.value.trim();
+      if (value && value !== selectedGame.name) {
+        next[selectedGame.id] = value;
+      } else {
+        delete next[selectedGame.id];
+      }
+      await saveGameNames(next);
+    } catch (err) {
+      alert(err instanceof Error ? err.message : 'Ошибка сохранения');
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const handleAddCampaign = async () => {
     if (!selectedGame || !campaignStart || !campaignEnd) return;
@@ -202,7 +229,9 @@ export default function ManagePage() {
                         : 'text-foreground hover:bg-card-hover'
                     }`}
                   >
-                    <div className="truncate font-medium">{game.name}</div>
+                    <div className="truncate font-medium">
+                      {gameNames[game.id] || game.name}
+                    </div>
                     <div className="truncate text-xs text-muted">{game.id}</div>
                   </button>
                 ))}
@@ -212,30 +241,63 @@ export default function ManagePage() {
             <section className="lg:col-span-2 rounded-2xl border border-border bg-card p-4 sm:p-5">
               {selectedGame ? (
                 <div>
-                  <h2 className="text-lg font-semibold text-foreground">
-                    {selectedGame.name}
+                  <h2 className="break-words text-lg font-semibold text-foreground">
+                    <GameName game={selectedGame} />
                   </h2>
-                  <p className="text-xs text-muted">{selectedGame.id}</p>
+                  <p className="break-all text-xs text-muted">{selectedGame.id}</p>
+
+                  <div className="mt-5 rounded-xl border border-border bg-background p-3">
+                    <label
+                      htmlFor="game-name"
+                      className="text-xs font-medium text-muted"
+                    >
+                      Название игры
+                    </label>
+                    <div className="mt-2 flex flex-col gap-2 sm:flex-row">
+                      <input
+                        id="game-name"
+                        key={selectedGame.id}
+                        ref={nameInputRef}
+                        type="text"
+                        defaultValue={gameNames[selectedGame.id] || selectedGame.name}
+                        placeholder={selectedGame.name}
+                        className="flex-1 rounded-xl border border-border bg-card px-3 py-2 text-sm text-foreground outline-none focus:border-accent"
+                      />
+                      <button
+                        onClick={handleSaveGameName}
+                        disabled={saving}
+                        className="rounded-xl bg-accent px-4 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90 disabled:opacity-50"
+                      >
+                        Сохранить
+                      </button>
+                    </div>
+                    {gameNames[selectedGame.id] && (
+                      <p className="mt-2 text-xs text-muted">
+                        Переопределено вручную. Очистите поле и сохраните,
+                        чтобы вернуть исходное название.
+                      </p>
+                    )}
+                  </div>
 
                   <div className="mt-6 grid grid-cols-1 gap-6 sm:grid-cols-2">
                     <div>
                       <h3 className="text-sm font-semibold text-accent">
                         Рекламные кампании
                       </h3>
-                      <div className="mt-3 flex flex-col gap-2 sm:flex-row">
+                      <div className="mt-3 flex flex-wrap gap-2">
                         <input
                           type="date"
                           value={campaignStart}
                           onChange={(e) => setCampaignStart(e.target.value)}
                           placeholder="С"
-                          className="flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-accent"
+                          className="min-w-[8rem] flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-accent"
                         />
                         <input
                           type="date"
                           value={campaignEnd}
                           onChange={(e) => setCampaignEnd(e.target.value)}
                           placeholder="По"
-                          className="flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-accent"
+                          className="min-w-[8rem] flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-accent"
                         />
                         <button
                           onClick={handleAddCampaign}
@@ -273,12 +335,12 @@ export default function ManagePage() {
                       <h3 className="text-sm font-semibold text-emerald-500">
                         Апдейты
                       </h3>
-                      <div className="mt-3 flex gap-2">
+                      <div className="mt-3 flex flex-wrap gap-2">
                         <input
                           type="date"
                           value={updateInput}
                           onChange={(e) => setUpdateInput(e.target.value)}
-                          className="flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-emerald-500"
+                          className="min-w-[8rem] flex-1 rounded-xl border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-emerald-500"
                         />
                         <button
                           onClick={handleAddUpdate}

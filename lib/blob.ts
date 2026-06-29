@@ -3,6 +3,7 @@ import { head, put } from '@vercel/blob';
 const BLOB_PATHS = {
   campaigns: 'campaigns.json',
   updates: 'updates.json',
+  gameNames: 'gameNames.json',
 } as const;
 
 function checkToken() {

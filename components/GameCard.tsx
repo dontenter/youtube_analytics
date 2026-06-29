@@ -5,6 +5,7 @@ import { motion } from 'framer-motion';
 import { Game, formatNumber, formatDate } from '@/lib/data';
 import { isValidCampaignRange } from '@/lib/events';
 import { useEvents } from '@/components/EventsProvider';
+import { GameName } from './GameName';
 import Sparkline from './Sparkline';
 
 interface GameCardProps {
@@ -39,7 +40,7 @@ export default function GameCard({ game, index, trendWeek }: GameCardProps) {
         <div className="flex items-start justify-between gap-4">
           <div className="min-w-0 flex-1">
             <h3 className="truncate text-base font-semibold text-foreground">
-              {game.name}
+              <GameName game={game} />
             </h3>
             <p className="mt-1 truncate text-xs text-muted">{game.id}</p>
           </div>

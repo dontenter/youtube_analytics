@@ -3,6 +3,7 @@ import Link from 'next/link';
 import data from '@/public/data.json';
 import { Game, formatNumber, formatDate } from '@/lib/data';
 import GameChart from '@/components/GameChart';
+import { GameName } from '@/components/GameName';
 
 interface GamePageProps {
   params: Promise<{ id: string }>;
@@ -55,7 +56,7 @@ export default async function GamePage({ params }: GamePageProps) {
 
         <header className="mt-8">
           <h1 className="text-3xl font-bold tracking-tight text-foreground sm:text-4xl">
-            {game.name}
+            <GameName game={game} />
           </h1>
           <p className="mt-2 text-sm text-muted">{game.id}</p>
         </header>

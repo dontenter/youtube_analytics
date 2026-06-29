@@ -8,6 +8,7 @@ import Stats from '@/components/Stats';
 import GameCard from '@/components/GameCard';
 import SearchBar from '@/components/SearchBar';
 import SortButtons, { SortMode } from '@/components/SortButtons';
+import { useEvents } from '@/components/EventsProvider';
 
 function calcTrendWeek(game: (typeof data.games)[number]): number {
   const recent = game.records.slice(-7);
@@ -17,6 +18,13 @@ function calcTrendWeek(game: (typeof data.games)[number]): number {
 export default function HomePage() {
   const [search, setSearch] = useState('');
   const [sortMode, setSortMode] = useState<SortMode>('total');
+  const { gameNames } = useEvents();
+
+  const displayNames = useMemo(() => {
+    return Object.fromEntries(
+      data.games.map((game) => [game.id, gameNames[game.id] || game.name])
+    );
+  }, [gameNames]);
 
   const sortedGames = useMemo(() => {
     const games = [...data.games];
@@ -39,10 +47,10 @@ export default function HomePage() {
     if (!query) return sortedGames;
     return sortedGames.filter(
       (game) =>
-        game.name.toLowerCase().includes(query) ||
+        displayNames[game.id].toLowerCase().includes(query) ||
         game.id.toLowerCase().includes(query)
     );
-  }, [search, sortedGames]);
+  }, [search, sortedGames, displayNames]);
 
   const trendsById = useMemo(() => {
     if (sortMode !== 'trend') return {};
